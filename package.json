@@ -1,0 +1,12 @@
+{
+  "name": "libby-mono",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "pnpm run --filter frontend dev"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

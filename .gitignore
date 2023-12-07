@@ -1,0 +1,15 @@
+# out
+/dist
+/build
+/target
+/tmp
+
+# dependencies
+node_modules
+
+# Editors
+.idea
+.project
+.vscode
+.settings/
+.sublime-workspace
