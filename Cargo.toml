@@ -1,0 +1,22 @@
+[package]
+name = "libby-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.33"
+dotenv = "0.15.0"
+
+[dependencies.tokio]
+version = "1.35.1"
+features = ["rt", "rt-multi-thread", "macros", "signal"]
+
+[dependencies.sqlx]
+version = "0.7.3"
+features = ["runtime-tokio", "mysql", "chrono"]
+
+[dependencies.uuid]
+version = "1.7.0"
+features = ["v4", "fast-rng"]
