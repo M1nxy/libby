@@ -13,15 +13,25 @@ impl Db {
       .max_connections(5)
       .connect(url)
       .await?;
-    Ok(Db { conn })
+
+    let db = Db { conn };
+    db.migrate().await?;
+    Ok(db)
   }
 
-  pub async fn new_with_max(url: &str, max: u32) -> Result<Db, Error> {
+  pub async fn new_with_max(&self, url: &str, max: u32) -> Result<Db, Error> {
     let conn = MySqlPoolOptions::new()
       .max_connections(max)
       .connect(url)
       .await?;
-    Ok(Db { conn })
+
+    let db = Db { conn };
+    db.migrate().await?;
+    Ok(db)
+  }
+
+  pub async fn migrate(&self) -> Result<(), Error> {
+    self.migrate_v1().await
   }
 
   pub async fn migrate_v1(&self) -> Result<(), Error> {

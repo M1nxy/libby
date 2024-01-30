@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 chrono = "0.4.33"
 dotenv = "0.15.0"
+lazy_static = "1.4.0"
 
 [dependencies.tokio]
 version = "1.35.1"
@@ -16,7 +17,3 @@ features = ["rt", "rt-multi-thread", "macros", "signal"]
 [dependencies.sqlx]
 version = "0.7.3"
 features = ["runtime-tokio", "mysql", "chrono"]
-
-[dependencies.uuid]
-version = "1.7.0"
-features = ["v4", "fast-rng"]
