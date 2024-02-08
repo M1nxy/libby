@@ -1,6 +1,7 @@
 use sqlx::{mysql::MySqlPoolOptions, Error, MySqlPool};
 
 pub mod authors;
+pub mod books;
 
 pub struct Db {
   pub conn: MySqlPool,
