@@ -80,11 +80,7 @@ impl Author {
     id: u64,
     partial: PartialAuthor,
   ) -> Result<Author, sqlx::Error> {
-    let old_author = query_as::<MySql, Author>(r#"SELECT * FROM `authors` WHERE `id`= ?"#)
-      .bind(id)
-      .fetch_one(&mut **tx)
-      .await?;
-
+    let old_author = Author::fetch_one(tx, id).await?;
     let updated_author = old_author.merge(partial);
 
     query(
