@@ -12,6 +12,9 @@ pub struct Publisher {
 }
 
 impl Publisher {
+  pub async fn fetch_books<'a>(mut self, tx: &mut Transaction<'a, MySql>) -> Result<Author, sqlx::Error> {
+    todo!("Unimplemented");
+  }
   pub async fn fetch_one<'a>(tx: &mut Transaction<'a, MySql>, publisher_id: u16) -> Result<Publisher, sqlx::Error> {
     query_as::<MySql, Publisher>(
       r#"SELECT * FROM `publisher`
