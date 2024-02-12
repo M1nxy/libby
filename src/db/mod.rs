@@ -3,6 +3,7 @@ use sqlx::{mysql::MySqlPoolOptions, query, Error, MySqlPool};
 pub mod authors;
 pub mod books;
 pub mod progress;
+pub mod publisher;
 pub mod user;
 
 pub struct Db {
@@ -51,6 +52,21 @@ impl Db {
 
     query!(
       r#"
+        CREATE TABLE IF NOT EXISTS `publisher` (
+          `id` SMALLINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+          `name` TEXT,
+          `description` TEXT,
+          `city` TEXT,
+          `date_added` TIMESTAMP DEFAULT NOW(),
+          `date_last_updated` TIMESTAMP ON UPDATE NOW()
+        );
+      "#
+    )
+    .execute(&mut *tx)
+    .await?;
+
+    query!(
+      r#"
         CREATE TABLE IF NOT EXISTS `book` (
           `id` BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
           `isbn` TEXT NOT NULL,
@@ -60,9 +76,11 @@ impl Db {
           `nsfw` BOOL,
           `num_pages` SMALLINT UNSIGNED NOT NULL,
           `image_formatted` BOOL,
+          `publisher_id` SMALLINT UNSIGNED,
           `date_published` TIMESTAMP,
           `date_added` TIMESTAMP DEFAULT NOW(),
-          `date_last_updated` TIMESTAMP ON UPDATE NOW()
+          `date_last_updated` TIMESTAMP ON UPDATE NOW(),
+          CONSTRAINT `fk_publisher_id` FOREIGN KEY (`publisher_id`) REFERENCES `publisher`(`id`)
         );
       "#
     )
@@ -91,8 +109,8 @@ impl Db {
           `current_page` SMALLINT UNSIGNED,
           `date_added` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           `date_last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-          CONSTRAINT fk_user_id FOREIGN KEY (`user_id`) REFERENCES `user`(`id`),
-          CONSTRAINT fk_book_id FOREIGN KEY (`book_id`) REFERENCES `book`(`id`)
+          CONSTRAINT `fk_user_id` FOREIGN KEY (`user_id`) REFERENCES `user`(`id`),
+          CONSTRAINT `fk_book_id` FOREIGN KEY (`book_id`) REFERENCES `book`(`id`)
         );
       "#,
     )

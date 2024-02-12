@@ -1,6 +1,8 @@
 use chrono::{DateTime, NaiveDate, Utc};
 use sqlx::{mysql::MySqlQueryResult, query, query_as, FromRow, MySql, Transaction};
 
+pub type Authors = Vec<Author>;
+
 #[derive(Debug, Clone, FromRow, PartialEq, Eq)]
 pub struct Author {
   pub id: u64,
@@ -30,6 +32,10 @@ impl Author {
       self.birth = Some(birth);
     }
     self
+  }
+
+  pub async fn fetch_books<'a>(mut self, tx: &mut Transaction<'a, MySql>) -> Result<Author, sqlx::Error> {
+    todo!("Unimplemented");
   }
 
   pub async fn fetch_one<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<Author, sqlx::Error> {
