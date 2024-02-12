@@ -12,10 +12,7 @@ pub struct Db {
 #[allow(dead_code)]
 impl Db {
   pub async fn new(url: &str) -> Result<Db, Error> {
-    let conn = MySqlPoolOptions::new()
-      .max_connections(5)
-      .connect(url)
-      .await?;
+    let conn = MySqlPoolOptions::new().max_connections(5).connect(url).await?;
 
     let db = Db { conn };
     db.migrate().await?;
@@ -23,10 +20,7 @@ impl Db {
   }
 
   pub async fn new_with_max(&self, url: &str, max: u32) -> Result<Db, Error> {
-    let conn = MySqlPoolOptions::new()
-      .max_connections(max)
-      .connect(url)
-      .await?;
+    let conn = MySqlPoolOptions::new().max_connections(max).connect(url).await?;
 
     let db = Db { conn };
     db.migrate().await?;
@@ -42,7 +36,7 @@ impl Db {
 
     sqlx::query!(
       "
-        CREATE TABLE IF NOT EXISTS `authors` (
+        CREATE TABLE IF NOT EXISTS `author` (
           `id` BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
           `name` TEXT NOT NULL,
           `description` TEXT,

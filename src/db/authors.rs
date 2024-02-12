@@ -33,27 +33,32 @@ impl Author {
   }
 
   pub async fn fetch_one<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<Author, sqlx::Error> {
-    query_as::<MySql, Author>(r#"SELECT * FROM `authors` WHERE `id`= ?"#)
-      .bind(id)
-      .fetch_one(&mut **tx)
-      .await
+    query_as::<MySql, Author>(
+      r#"SELECT * FROM `author`
+      WHERE `id`= ?"#,
+    )
+    .bind(id)
+    .fetch_one(&mut **tx)
+    .await
   }
 
   pub async fn fetch_all<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Vec<Author>, sqlx::Error> {
-    query_as::<MySql, Author>(r#"SELECT * FROM `authors`"#).fetch_all(&mut **tx).await
+    query_as::<MySql, Author>(r#"SELECT * FROM `author`"#).fetch_all(&mut **tx).await
   }
 
   pub async fn fetch_last<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Author, sqlx::Error> {
-    query_as::<MySql, Author>(r#"SELECT * FROM `authors` WHERE `id` = LAST_INSERT_ID();"#)
-      .fetch_one(&mut **tx)
-      .await
+    query_as::<MySql, Author>(
+      r#"SELECT * FROM `author`
+      WHERE `id` = LAST_INSERT_ID();"#,
+    )
+    .fetch_one(&mut **tx)
+    .await
   }
 
   pub async fn create<'a>(tx: &mut Transaction<'a, MySql>, partial: PartialAuthor) -> Result<Author, sqlx::Error> {
     query(
-      r#"INSERT INTO `authors` (`name`, `description`, `birth`)
-      VALUES (?, ?, ?)
-      "#,
+      r#"INSERT INTO `author` (`name`, `description`, `birth`)
+      VALUES (?, ?, ?)"#,
     )
     .bind(partial.name)
     .bind(partial.description)
@@ -69,10 +74,9 @@ impl Author {
     let updated_author = old_author.merge(partial);
 
     query(
-      r#"UPDATE `authors` 
+      r#"UPDATE `author`
       SET `name` = ?, `description` = ?, `birth` = ?
-      WHERE `id` = ?
-      "#,
+      WHERE `id` = ?"#,
     )
     .bind(updated_author.name)
     .bind(updated_author.description)
@@ -85,6 +89,12 @@ impl Author {
   }
 
   pub async fn delete<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<MySqlQueryResult, sqlx::Error> {
-    query(r#"DELETE FROM `authors` WHERE `id` = ?"#).bind(id).execute(&mut **tx).await
+    query(
+      r#"DELETE FROM `author`
+      WHERE `id` = ?"#,
+    )
+    .bind(id)
+    .execute(&mut **tx)
+    .await
   }
 }
