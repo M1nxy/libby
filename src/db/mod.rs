@@ -2,6 +2,8 @@ use sqlx::{mysql::MySqlPoolOptions, Error, MySqlPool};
 
 pub mod authors;
 pub mod books;
+pub mod progress;
+pub mod user;
 
 pub struct Db {
   pub conn: MySqlPool,

@@ -1,16 +1,15 @@
-use crate::db::{authors, Db};
+#[cfg(test)]
+use crate::db::authors;
+use crate::Db;
 use dotenv::dotenv;
 use sqlx::{MySql, Transaction};
 
+#[allow(dead_code)]
 async fn create_tx() -> Transaction<'static, MySql> {
   dotenv().ok();
   let conn_str = std::env::var("DATABASE_URL").expect("DATABASE URL NOT PRESENT IN ENVIRONMENT");
   let database = Db::new(&conn_str).await.expect("Failed to connect to DB");
-  database
-    .conn
-    .begin()
-    .await
-    .expect("Failed to create transaction")
+  database.conn.begin().await.expect("Failed to create transaction")
 }
 
 #[tokio::test]

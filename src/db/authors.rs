@@ -2,7 +2,6 @@ use chrono::{DateTime, NaiveDate, Utc};
 use sqlx::{mysql::MySqlQueryResult, query, query_as, FromRow, MySql, Transaction};
 
 #[derive(Debug, Clone, FromRow, PartialEq, Eq)]
-#[allow(dead_code)]
 pub struct Author {
   pub id: u64,
   pub name: String,
@@ -13,14 +12,12 @@ pub struct Author {
 }
 
 #[derive(Debug, Clone, FromRow, PartialEq, Eq)]
-#[allow(dead_code)]
 pub struct PartialAuthor {
   pub name: Option<String>,
   pub description: Option<String>,
   pub birth: Option<NaiveDate>,
 }
 
-#[allow(dead_code)]
 impl Author {
   fn merge(mut self, partial: PartialAuthor) -> Self {
     if let Some(name) = partial.name {
@@ -35,10 +32,7 @@ impl Author {
     self
   }
 
-  pub async fn fetch_one<'a>(
-    tx: &mut Transaction<'a, MySql>,
-    id: u64,
-  ) -> Result<Author, sqlx::Error> {
+  pub async fn fetch_one<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<Author, sqlx::Error> {
     query_as::<MySql, Author>(r#"SELECT * FROM `authors` WHERE `id`= ?"#)
       .bind(id)
       .fetch_one(&mut **tx)
@@ -46,9 +40,7 @@ impl Author {
   }
 
   pub async fn fetch_all<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Vec<Author>, sqlx::Error> {
-    query_as::<MySql, Author>(r#"SELECT * FROM `authors`"#)
-      .fetch_all(&mut **tx)
-      .await
+    query_as::<MySql, Author>(r#"SELECT * FROM `authors`"#).fetch_all(&mut **tx).await
   }
 
   pub async fn fetch_last<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Author, sqlx::Error> {
@@ -57,10 +49,7 @@ impl Author {
       .await
   }
 
-  pub async fn create<'a>(
-    tx: &mut Transaction<'a, MySql>,
-    partial: PartialAuthor,
-  ) -> Result<Author, sqlx::Error> {
+  pub async fn create<'a>(tx: &mut Transaction<'a, MySql>, partial: PartialAuthor) -> Result<Author, sqlx::Error> {
     query(
       r#"INSERT INTO `authors` (`name`, `description`, `birth`)
       VALUES (?, ?, ?)
@@ -75,11 +64,7 @@ impl Author {
     Author::fetch_last(tx).await
   }
 
-  pub async fn update<'a>(
-    tx: &mut Transaction<'a, MySql>,
-    id: u64,
-    partial: PartialAuthor,
-  ) -> Result<Author, sqlx::Error> {
+  pub async fn update<'a>(tx: &mut Transaction<'a, MySql>, id: u64, partial: PartialAuthor) -> Result<Author, sqlx::Error> {
     let old_author = Author::fetch_one(tx, id).await?;
     let updated_author = old_author.merge(partial);
 
@@ -99,13 +84,7 @@ impl Author {
     Author::fetch_one(tx, id).await
   }
 
-  pub async fn delete<'a>(
-    tx: &mut Transaction<'a, MySql>,
-    id: u64,
-  ) -> Result<MySqlQueryResult, sqlx::Error> {
-    query(r#"DELETE FROM `authors` WHERE `id` = ?"#)
-      .bind(id)
-      .execute(&mut **tx)
-      .await
+  pub async fn delete<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<MySqlQueryResult, sqlx::Error> {
+    query(r#"DELETE FROM `authors` WHERE `id` = ?"#).bind(id).execute(&mut **tx).await
   }
 }
