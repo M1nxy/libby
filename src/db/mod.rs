@@ -1,4 +1,4 @@
-use sqlx::{mysql::MySqlPoolOptions, Error, MySqlPool};
+use sqlx::{mysql::MySqlPoolOptions, query, Error, MySqlPool};
 
 pub mod authors;
 pub mod books;
@@ -35,7 +35,7 @@ impl Db {
     let mut tx = self.conn.begin().await?;
 
     sqlx::query!(
-      "
+      r#"
         CREATE TABLE IF NOT EXISTS `author` (
           `id` BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
           `name` TEXT NOT NULL,
@@ -44,7 +44,57 @@ impl Db {
           `date_added` TIMESTAMP DEFAULT NOW(),
           `date_last_updated` TIMESTAMP ON UPDATE NOW()
         );
-      "
+      "#
+    )
+    .execute(&mut *tx)
+    .await?;
+
+    query!(
+      r#"
+        CREATE TABLE IF NOT EXISTS `book` (
+          `id` BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+          `isbn` TEXT NOT NULL,
+          `name` TEXT NOT NULL,
+          `description` TEXT,
+          `language` TEXT,
+          `nsfw` BOOL,
+          `num_pages` SMALLINT UNSIGNED NOT NULL,
+          `image_formatted` BOOL,
+          `date_published` TIMESTAMP,
+          `date_added` TIMESTAMP DEFAULT NOW(),
+          `date_last_updated` TIMESTAMP ON UPDATE NOW()
+        );
+      "#
+    )
+    .execute(&mut *tx)
+    .await?;
+
+    query!(
+      r#"
+        CREATE TABLE IF NOT EXISTS `user` (
+          `id` TINYINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+          `name` TEXT,
+          `date_added` TIMESTAMP DEFAULT NOW(),
+          `date_last_updated` TIMESTAMP ON UPDATE NOW()
+        );
+      "#
+    )
+    .execute(&mut *tx)
+    .await?;
+
+    query!(
+      r#"
+        CREATE TABLE IF NOT EXISTS `progress` (
+          `id` BIGINT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+          `user_id` TINYINT UNSIGNED,
+          `book_id` BIGINT UNSIGNED,
+          `current_page` SMALLINT UNSIGNED,
+          `date_added` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+          `date_last_updated` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+          CONSTRAINT fk_user_id FOREIGN KEY (`user_id`) REFERENCES `user`(`id`),
+          CONSTRAINT fk_book_id FOREIGN KEY (`book_id`) REFERENCES `book`(`id`)
+        );
+      "#,
     )
     .execute(&mut *tx)
     .await?;

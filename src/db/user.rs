@@ -1,9 +1,12 @@
+use chrono::{DateTime, Utc};
 use sqlx::{mysql::MySqlQueryResult, query, query_as, FromRow, MySql, Transaction};
 
 #[derive(Debug, Clone, FromRow, PartialEq, Eq)]
 pub struct User {
   pub id: u8,
   pub name: String,
+  pub date_added: Option<DateTime<Utc>>,
+  pub date_last_updated: Option<DateTime<Utc>>,
 }
 
 impl User {

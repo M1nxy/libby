@@ -1,3 +1,4 @@
+use chrono::{DateTime, Utc};
 use sqlx::{mysql::MySqlQueryResult, query, query_as, FromRow, MySql, Transaction};
 
 #[derive(Debug, Clone, FromRow, PartialEq, Eq)]
@@ -6,6 +7,8 @@ pub struct Progress {
   pub user_id: u8,
   pub book_id: u64,
   pub current_page: u16,
+  pub date_added: Option<DateTime<Utc>>,
+  pub date_last_updated: Option<DateTime<Utc>>,
 }
 
 impl Progress {
