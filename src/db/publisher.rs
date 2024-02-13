@@ -24,11 +24,9 @@ impl Publisher {
       self.name = name;
     }
     if let Some(description) = partial.description {
-      self.description = Some(description);
+      self.description = description;
     }
-    if let Some(city) = partial.city {
-      self.city = Some(city);
-    }
+    self.city = partial.city;
     self
   }
 

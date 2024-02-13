@@ -34,21 +34,17 @@ impl Author {
     self
   }
 
-  pub async fn fetch_books<'a>(mut self, tx: &mut Transaction<'a, MySql>) -> Result<Author, sqlx::Error> {
-    todo!("Unimplemented");
-  }
-
-  pub async fn fetch_one<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<Author, sqlx::Error> {
+  pub async fn fetch_one<'a>(tx: &mut Transaction<'a, MySql>, author_id: u64) -> Result<Author, sqlx::Error> {
     query_as::<MySql, Author>(
       r#"SELECT * FROM `author`
       WHERE `id`= ?"#,
     )
-    .bind(id)
+    .bind(author_id)
     .fetch_one(&mut **tx)
     .await
   }
 
-  pub async fn fetch_all<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Vec<Author>, sqlx::Error> {
+  pub async fn fetch_all<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Authors, sqlx::Error> {
     query_as::<MySql, Author>(r#"SELECT * FROM `author`"#).fetch_all(&mut **tx).await
   }
 
@@ -75,8 +71,8 @@ impl Author {
     Author::fetch_last(tx).await
   }
 
-  pub async fn update<'a>(tx: &mut Transaction<'a, MySql>, id: u64, partial: PartialAuthor) -> Result<Author, sqlx::Error> {
-    let old_author = Author::fetch_one(tx, id).await?;
+  pub async fn update<'a>(tx: &mut Transaction<'a, MySql>, author_id: u64, partial: PartialAuthor) -> Result<Author, sqlx::Error> {
+    let old_author = Author::fetch_one(tx, author_id).await?;
     let updated_author = old_author.merge(partial);
 
     query(
@@ -87,19 +83,19 @@ impl Author {
     .bind(updated_author.name)
     .bind(updated_author.description)
     .bind(updated_author.birth)
-    .bind(id)
+    .bind(author_id)
     .execute(&mut **tx)
     .await?;
 
-    Author::fetch_one(tx, id).await
+    Author::fetch_one(tx, author_id).await
   }
 
-  pub async fn delete<'a>(tx: &mut Transaction<'a, MySql>, id: u64) -> Result<MySqlQueryResult, sqlx::Error> {
+  pub async fn delete<'a>(tx: &mut Transaction<'a, MySql>, author_id: u64) -> Result<MySqlQueryResult, sqlx::Error> {
     query(
       r#"DELETE FROM `author`
       WHERE `id` = ?"#,
     )
-    .bind(id)
+    .bind(author_id)
     .execute(&mut **tx)
     .await
   }

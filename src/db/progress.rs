@@ -23,6 +23,10 @@ impl Progress {
     .await
   }
 
+  pub async fn fetch_all<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Vec<Progress>, sqlx::Error> {
+    query_as::<MySql, Progress>(r#"SELECT * FROM `progress`"#).fetch_all(&mut **tx).await
+  }
+
   pub async fn fetch_last<'a>(tx: &mut Transaction<'a, MySql>) -> Result<Progress, sqlx::Error> {
     query_as::<MySql, Progress>(
       r#"SELECT * FROM `progress`
