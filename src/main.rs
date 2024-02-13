@@ -4,7 +4,7 @@ pub mod db;
 pub mod test;
 
 #[tokio::main]
-async fn main() -> Result<(), Error> {
+async fn main() -> Result<(), sqlx::Error> {
   dotenv().ok();
 
   let conn_str = std::env::var("DATABASE_URL").expect("DATABASE URL NOT PRESENT IN ENVIRONMENT");

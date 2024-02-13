@@ -1,4 +1,4 @@
-use sqlx::{mysql::MySqlPoolOptions, query, Error, MySqlPool};
+use sqlx::{mysql::MySqlPoolOptions, query, MySqlPool};
 
 pub mod authors;
 pub mod books;
@@ -12,7 +12,7 @@ pub struct Db {
 
 #[allow(dead_code)]
 impl Db {
-  pub async fn new(url: &str) -> Result<Db, Error> {
+  pub async fn new(url: &str) -> Result<Db, sqlx::Error> {
     let conn = MySqlPoolOptions::new().max_connections(5).connect(url).await?;
 
     let db = Db { conn };
@@ -20,7 +20,7 @@ impl Db {
     Ok(db)
   }
 
-  pub async fn new_with_max(&self, url: &str, max: u32) -> Result<Db, Error> {
+  pub async fn new_with_max(&self, url: &str, max: u32) -> Result<Db, sqlx::Error> {
     let conn = MySqlPoolOptions::new().max_connections(max).connect(url).await?;
 
     let db = Db { conn };
@@ -28,11 +28,11 @@ impl Db {
     Ok(db)
   }
 
-  pub async fn migrate(&self) -> Result<(), Error> {
+  pub async fn migrate(&self) -> Result<(), sqlx::Error> {
     self.migrate_v1().await
   }
 
-  pub async fn migrate_v1(&self) -> Result<(), Error> {
+  pub async fn migrate_v1(&self) -> Result<(), sqlx::Error> {
     let mut tx = self.conn.begin().await?;
 
     sqlx::query!(
